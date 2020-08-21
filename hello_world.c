@@ -9,7 +9,7 @@ int main(int argc, char const *argv[])
 
     while (1)
     {
-        fputs("ayoliosp> ", stdout);
+        fputs("ayolisp> ", stdout);
 
         fgets(input, 2048, stdin);
 
