@@ -1,19 +1,37 @@
+#ifdef _WIN64
+#include <string.h>
+static char buffer[2048];
+/* fake readline */
+char* readline(char* prompt) {
+    fputs(prompt, stdout);
+    fgets(buffer, 2048, stdin);
+    char* cpy = malloc(strlen(buffer)+1);
+    strcpy(cpy, buffer);
+    cpy[strlen(cpy)-1] = '\0';
+    return cpy;
+}
+void add_history(char* unused){}
+#else 
 #include <stdio.h>
-
-static char input[2048];
+#include <stdlib.h>
+#include <editline/readline.h>
+#include <editline/history.h>
+#endif
 
 int main(int argc, char const *argv[])
 {
-    puts("Ayolisp Version 0.0.0.0.1");
-    puts("Press Ctrl+c to exit \n");
+    puts("\nAyolisp Version 0.0.0.0.1");
+    puts("Press Ctrl+C to exit \nWhat will you lisp today? \n");
 
     while (1)
     {
-        fputs("ayolisp> ", stdout);
+        char* input = readline("ayolisp> ");
 
-        fgets(input, 2048, stdin);
+        add_history(input);
 
-        printf("No you're a %s", input);
+        printf("No you're a %s\n", input);
+
+        free(input);
     }
     
     return 0;
