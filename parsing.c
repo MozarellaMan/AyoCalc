@@ -1,3 +1,4 @@
+#include "mpc-0.9.0/mpc.h"
 #ifdef _WIN64
 #include <string.h>
 static char buffer[2048];
