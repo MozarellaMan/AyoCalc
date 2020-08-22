@@ -1,5 +1,5 @@
 # AyoCalc
-A calculator repl that uses Polish notation
+A calculator repl that uses Polish notation.
 
 # How to use
 
@@ -8,10 +8,10 @@ A calculator repl that uses Polish notation
 - enter equation and press enter
 
 # Polish Notation
-- 1 + 2 + 6	is	`+ 1 2 6`
-- 6 + (2 * 9)	is	`+ 6 (* 2 9)`
-- (10 * 2) / (4 + 2)	is	`/ (* 10 2) (+ 4 2)`
+- `1 + 2 + 6`	 is	`+ 1 2 6`
+- `6 + (2 * 9)`	is	`+ 6 (* 2 9)`
+- `(10 * 2) / (4 + 2)` is	`/ (* 10 2) (+ 4 2)`
 
 # Libraries + Credits
 - [Micro Parser Combinators](https://github.com/orangeduck/mpc) for parser
-- Code mainly from www.buildyourownlist.com (at the moment!)
+- Code mainly from www.buildyourownlisp.com (at the moment!)
