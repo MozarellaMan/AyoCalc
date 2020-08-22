@@ -1,6 +1,6 @@
 #include "mpc-0.9.0/mpc.h"
-#define MAX(a,b) ((a) > (b) ? (a) : (b))
-#define MIN(a,b) ((a) < (b) ? (a) : (b))
+#include "altype.c"
+#include "util.c"
 #ifdef _WIN64
 #include <string.h>
 static char buffer[2048];
@@ -19,86 +19,59 @@ void add_history(char* unused){}
 #include <editline/history.h>
 #endif
 
-int number_of_nodes(mpc_ast_t* tree) {
-    if(tree->children_num == 0) { return 1; }
-    if(tree->children_num >= 1) {
-        int total = 1;
-        for (int i = 0; i < tree->children_num; i++)
-        {
-            total += number_of_nodes(tree->children[i]);
-        }
-        return total;
+alval eval_op(alval x, char* op, alval y) {
+
+      /* If either value is an error return it */
+    if (x.type == ALVAL_ERR) { return x; }
+    if (y.type == ALVAL_ERR) { return y; }
+
+    /* Otherwise do maths on the number values */
+    if(strcmp(op, "+") == 0){ return alval_num(x.num + y.num);}
+    if(strcmp(op, "-") == 0){ return alval_num(x.num - y.num);;}
+    if(strcmp(op, "*") == 0){ return alval_num(x.num * y.num);}
+    if(strcmp(op, "^") == 0){ return alval_num(pow(x.num,  y.num));}
+    if(strcmp(op, "max") == 0){ return alval_num(fmax(x.num, y.num));}
+    if(strcmp(op, "min") == 0){ return alval_num(fmax(x.num, y.num));}
+
+
+     /* division by zero handling */
+    if(strcmp(op, "/") == 0) { 
+        return y.num == 0.0
+            ? alval_err(ALERR_DIV_ZERO) 
+            : alval_num(x.num / y.num);
     }
-    return 0;
-}
-
-int max_branch_children(mpc_ast_t* tree) {
-    if(tree->children_num == 0) { return 0; }
-    if(tree->children_num >= 1) {
-        int max = 0;
-        for (int i = 0; i < tree->children_num; i++)
-        {
-            max = MAX(max_branch_children(tree->children[i]), max);
-        }
-        return 1+max;
+    if(strcmp(op, "%") == 0){ 
+        return y.num == 0.0 
+            ? alval_err(ALERR_DIV_ZERO)
+            : alval_num(fmod(x.num, y.num));
     }
-    return 0;
+    return alval_err(ALERR_BAD_OP);
 }
 
-int number_of_branches(mpc_ast_t* tree) {
-    if(tree->children_num == 0) { return 0; }
-    if(tree->children_num >= 1) {
-        int total = tree->children_num;
-        for (int i = 0; i < tree->children_num; i++)
-        {
-            total += number_of_branches(tree->children[i]);
-        }
-        return total;
-    }
-    return 0;
-}
-
-double eval_op(double x, char* op, double y) {
-    if(strcmp(op, "+") == 0){ return x + y;}
-    if(strcmp(op, "-") == 0){ return x - y;}
-    if(strcmp(op, "*") == 0){ return x * y;}
-    if(strcmp(op, "/") == 0){ return x / y;}
-    if(strcmp(op, "%") == 0){ return fmod(x,y);}
-    if(strcmp(op, "^") == 0){ return pow(x,y);}
-    if(strcmp(op, "max") == 0){ return fmax(x,y);}
-    if(strcmp(op, "min") == 0){ return fmin(x,y);}
-    return 0;
-}
-
-double eval_op_single(char* op, double x){
-    if(strcmp(op, "-") == 0){ return x * -1;}
+alval eval_op_single(char* op, alval x){
+    if (x.type == ALVAL_ERR) { return x; }
+    if(strcmp(op, "-") == 0){ return alval_num(x.num * -1);}
     return x;
 }
 
-double eval(mpc_ast_t* tree) {
-
+alval eval(mpc_ast_t* tree) {
 
     /* if tagged as number, return directly */
-
     if(strstr(tree->tag, "number")){
-        return atof(tree->contents);
+        /* Check if there is some error in conversion */
+        errno = 0;
+        double x = strtod(tree->contents, NULL);
+        return errno != ERANGE ? alval_num(x) : alval_err(ALERR_BAD_NUM);
     }
-
     /* the operator is always the second child */
-
     char* op = tree->children[1]->contents;
-    
     /* store child  */
-
-    double x = eval(tree->children[2]);
-
+    alval x = eval(tree->children[2]);
     /* Iterate through remaining children and combine */
     int i = 3;
     if(strstr(tree->children[i]->tag, "expr")) {
         while (strstr(tree->children[i]->tag, "expr")) {
-                
             x = eval_op(x, op, eval(tree->children[i]));
-
             i++;
         }
     }  else {
@@ -107,20 +80,6 @@ double eval(mpc_ast_t* tree) {
 
     return x;
 }
-
-static void debug_tree(mpc_ast_t* a) {
-    printf("Tag: %s\n", a->tag);
-    printf("Contents: %s\n", a->contents);
-    printf("Number of children: %i\n", a->children_num);
-    mpc_ast_t* c0 = a->children[0];
-    printf("First Child Tag: %s\n", c0->tag);
-    printf("First Child Contents: %s\n", c0->contents);
-    printf("First Child Number of children: %i\n",
-    c0->children_num);
-    printf("number of tree children %i\n", number_of_nodes(a));
-    printf("number of branches: %i\n", number_of_branches(a));
-}
-
 
 int main(int argc, char const *argv[]) {
     mpc_parser_t* Number   = mpc_new("number");
@@ -137,21 +96,18 @@ int main(int argc, char const *argv[]) {
     ",
     Number, Operator, Expr, Ayolisp);
 
-    puts("\nAyolisp Version 0.0.0.0.1");
+    puts("\nAyolisp Version 0.0.0.0.2");
     puts("Press Ctrl+C to exit \nWhat will you lisp today? \n");
-
     while (1)
     {
         char* input = readline("ayolisp> ");
-
         add_history(input);
-
         mpc_result_t r;
 
         if(mpc_parse("<stdin>", input, Ayolisp, &r)){
-            double result = eval(r.output);
+            alval result = eval(r.output);
+            alval_println(result);
             mpc_ast_t* a = r.output;
-            printf("%g\n", result);
             mpc_ast_delete(r.output);
         } else {
             mpc_err_print(r.error);
