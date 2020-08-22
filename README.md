@@ -1,6 +1,13 @@
 # AyoCalc
 
-A calculator repl that uses Polish notation.
+A calculator repl that uses Polish notation. This implementation is from the book [Build Your Own Lisp](www.buildyourownlisp.com). My version has the following added features:
+
+- double precision floating point values
+- min operator
+- max operator
+- % operator
+- negation with `-`
+- more to come...
 
 ## How to use
 
@@ -22,4 +29,4 @@ A calculator repl that uses Polish notation.
 ## Libraries + Credits
 
 - [Micro Parser Combinators](https://github.com/orangeduck/mpc) for parser
-- Code mainly from www.buildyourownlisp.com (at the moment!)
+- www.buildyourownlisp.com
