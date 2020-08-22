@@ -10,6 +10,12 @@ A calculator repl that uses Polish notation. This implementation is from the boo
 - negation with `-`
 - more to come...
 
+## Polish Notation
+
+- `1 + 2 + 6`  is `+ 1 2 6`
+- `6 + (2 * 9)`	is `+ 6 (* 2 9)`
+- `(10 * 2) / (4 + 2)` is `/ (* 10 2) (+ 4 2)`
+
 ## How to use
 
 - Clone repo
@@ -21,11 +27,6 @@ A calculator repl that uses Polish notation. This implementation is from the boo
 - gcc (mingw or WSL if you are on windows)
 - editline (OSX and Linux)
 
-## Polish Notation
-
-- `1 + 2 + 6`  is `+ 1 2 6`
-- `6 + (2 * 9)`	is `+ 6 (* 2 9)`
-- `(10 * 2) / (4 + 2)` is `/ (* 10 2) (+ 4 2)`
 
 ## Libraries + Credits
 
