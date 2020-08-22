@@ -45,6 +45,7 @@ alval eval_op(alval x, char* op, alval y) {
             ? alval_err(ALERR_DIV_ZERO)
             : alval_num(fmod(x.num, y.num));
     }
+
     return alval_err(ALERR_BAD_OP);
 }
 
@@ -90,7 +91,7 @@ int main(int argc, char const *argv[]) {
     mpca_lang(MPCA_LANG_DEFAULT,
     "                                                                   \
       number   : /-?[0-9]+(\\.[0-9]*)?/;                                \
-      operator : '+' | '-' | '*' | '/' | '%' | '^' | \"max\" | \"min\"; \
+      operator : '+' | '-' | '*' | '/' | '%' | '^' | \"max\" | \"min\" | \"avg\"; \
       expr     : <number> | '(' <operator> <expr>+ ')' ;                \
       ayolisp    : /^/ <operator> <expr>+ /$/ ;                         \
     ",
