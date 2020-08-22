@@ -58,17 +58,25 @@ int number_of_branches(mpc_ast_t* tree) {
     return 0;
 }
 
-double eval_op(double x, char* op, double y){
+double eval_op(double x, char* op, double y) {
     if(strcmp(op, "+") == 0){ return x + y;}
     if(strcmp(op, "-") == 0){ return x - y;}
     if(strcmp(op, "*") == 0){ return x * y;}
     if(strcmp(op, "/") == 0){ return x / y;}
     if(strcmp(op, "%") == 0){ return fmod(x,y);}
     if(strcmp(op, "^") == 0){ return pow(x,y);}
+    if(strcmp(op, "max") == 0){ return fmax(x,y);}
+    if(strcmp(op, "min") == 0){ return fmin(x,y);}
     return 0;
 }
 
+double eval_op_single(char* op, double x){
+    if(strcmp(op, "-") == 0){ return x * -1;}
+    return x;
+}
+
 double eval(mpc_ast_t* tree) {
+
 
     /* if tagged as number, return directly */
 
@@ -79,23 +87,28 @@ double eval(mpc_ast_t* tree) {
     /* the operator is always the second child */
 
     char* op = tree->children[1]->contents;
-
+    
     /* store child  */
 
     double x = eval(tree->children[2]);
 
     /* Iterate through remaining children and combine */
     int i = 3;
-    while (strstr(tree->children[i]->tag, "expr"))
-    {
-        x = eval_op(x, op, eval(tree->children[i]));
-        i++;
+    if(strstr(tree->children[i]->tag, "expr")) {
+        while (strstr(tree->children[i]->tag, "expr")) {
+                
+            x = eval_op(x, op, eval(tree->children[i]));
+
+            i++;
+        }
+    }  else {
+        return eval_op_single(op,x);
     }
-    
+
     return x;
 }
 
-void debug_tree(mpc_ast_t* a) {
+static void debug_tree(mpc_ast_t* a) {
     printf("Tag: %s\n", a->tag);
     printf("Contents: %s\n", a->contents);
     printf("Number of children: %i\n", a->children_num);
@@ -116,11 +129,11 @@ int main(int argc, char const *argv[]) {
     mpc_parser_t* Ayolisp  = mpc_new("ayolisp");
 
     mpca_lang(MPCA_LANG_DEFAULT,
-    "                                                     \
-      number   : /-?[0-9]+(\\.[0-9]*)?/;                  \
-      operator : '+' | '-' | '*' | '/' | '%' | '^' ;      \
-      expr     : <number> | '(' <operator> <expr>+ ')' ;  \
-      ayolisp    : /^/ <operator> <expr>+ /$/ ;           \
+    "                                                                   \
+      number   : /-?[0-9]+(\\.[0-9]*)?/;                                \
+      operator : '+' | '-' | '*' | '/' | '%' | '^' | \"max\" | \"min\"; \
+      expr     : <number> | '(' <operator> <expr>+ ')' ;                \
+      ayolisp    : /^/ <operator> <expr>+ /$/ ;                         \
     ",
     Number, Operator, Expr, Ayolisp);
 

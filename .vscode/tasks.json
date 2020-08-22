@@ -1,0 +1,29 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "C/C++: gcc build active file",
+            "command": "/usr/bin/gcc",
+            "args": [
+                "-g",
+                "${file}",
+                "${workspaceFolder}/mpc-0.9.0/mpc.c",
+                "-ledit",
+                "-lm",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ],
+    "version": "2.0.0"
+}
