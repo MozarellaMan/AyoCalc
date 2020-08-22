@@ -1,4 +1,6 @@
 #include "mpc-0.9.0/mpc.h"
+#define MAX(a,b) ((a) > (b) ? (a) : (b))
+#define MIN(a,b) ((a) < (b) ? (a) : (b))
 #ifdef _WIN64
 #include <string.h>
 static char buffer[2048];
@@ -26,6 +28,19 @@ int number_of_nodes(mpc_ast_t* tree) {
             total += number_of_nodes(tree->children[i]);
         }
         return total;
+    }
+    return 0;
+}
+
+int max_branch_children(mpc_ast_t* tree) {
+    if(tree->children_num == 0) { return 0; }
+    if(tree->children_num >= 1) {
+        int max = 0;
+        for (int i = 0; i < tree->children_num; i++)
+        {
+            max = MAX(max_branch_children(tree->children[i]), max);
+        }
+        return 1+max;
     }
     return 0;
 }
@@ -123,6 +138,7 @@ int main(int argc, char const *argv[]) {
             long result = eval(r.output);
             mpc_ast_t* a = r.output;
             printf("%li\n", result);
+            printf("max branch children %i\n", max_branch_children(a));
             mpc_ast_delete(r.output);
         } else {
             mpc_err_print(r.error);
