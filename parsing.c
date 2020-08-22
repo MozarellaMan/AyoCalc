@@ -58,21 +58,22 @@ int number_of_branches(mpc_ast_t* tree) {
     return 0;
 }
 
-int eval_op(long x, char* op, long y){
+double eval_op(double x, char* op, double y){
     if(strcmp(op, "+") == 0){ return x + y;}
     if(strcmp(op, "-") == 0){ return x - y;}
     if(strcmp(op, "*") == 0){ return x * y;}
     if(strcmp(op, "/") == 0){ return x / y;}
-    if(strcmp(op, "%") == 0){ return x % y;}
+    if(strcmp(op, "%") == 0){ return fmod(x,y);}
+    if(strcmp(op, "^") == 0){ return pow(x,y);}
     return 0;
 }
 
-long eval(mpc_ast_t* tree) {
+double eval(mpc_ast_t* tree) {
 
     /* if tagged as number, return directly */
 
     if(strstr(tree->tag, "number")){
-        return atoi(tree->contents);
+        return atof(tree->contents);
     }
 
     /* the operator is always the second child */
@@ -81,7 +82,7 @@ long eval(mpc_ast_t* tree) {
 
     /* store child  */
 
-    long x = eval(tree->children[2]);
+    double x = eval(tree->children[2]);
 
     /* Iterate through remaining children and combine */
     int i = 3;
@@ -117,7 +118,7 @@ int main(int argc, char const *argv[]) {
     mpca_lang(MPCA_LANG_DEFAULT,
     "                                                     \
       number   : /-?[0-9]+(\\.[0-9]*)?/;                  \
-      operator : '+' | '-' | '*' | '/' | '%' ;            \
+      operator : '+' | '-' | '*' | '/' | '%' | '^' ;      \
       expr     : <number> | '(' <operator> <expr>+ ')' ;  \
       ayolisp    : /^/ <operator> <expr>+ /$/ ;           \
     ",
@@ -135,10 +136,9 @@ int main(int argc, char const *argv[]) {
         mpc_result_t r;
 
         if(mpc_parse("<stdin>", input, Ayolisp, &r)){
-            long result = eval(r.output);
+            double result = eval(r.output);
             mpc_ast_t* a = r.output;
-            printf("%li\n", result);
-            printf("max branch children %i\n", max_branch_children(a));
+            printf("%g\n", result);
             mpc_ast_delete(r.output);
         } else {
             mpc_err_print(r.error);
