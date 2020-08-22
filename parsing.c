@@ -97,11 +97,11 @@ int main(int argc, char const *argv[]) {
     ",
     Number, Operator, Expr, Ayolisp);
 
-    puts("\nAyolisp Version 0.0.0.0.2");
+    puts("\nAyoCalc Version 0.0.0.0.5");
     puts("Press Ctrl+C to exit \nWhat will you lisp today? \n");
     while (1)
     {
-        char* input = readline("ayolisp> ");
+        char* input = readline("ayocalcp> ");
         add_history(input);
         mpc_result_t r;
 

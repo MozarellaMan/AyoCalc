@@ -3,9 +3,10 @@
 A calculator repl that uses Polish notation. This implementation is from the book [Build Your Own Lisp](www.buildyourownlisp.com). My version has the following added features:
 
 - double precision floating point values
-- min operator
-- max operator
-- % operator
+- `min` operator
+- `max` operator
+- `%` operator
+- `^` operator
 - negation with `-`
 - more to come...
 
