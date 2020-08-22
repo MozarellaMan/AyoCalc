@@ -86,7 +86,7 @@ int main(int argc, char const *argv[]) {
     mpc_parser_t* Number   = mpc_new("number");
     mpc_parser_t* Operator = mpc_new("operator");
     mpc_parser_t* Expr     = mpc_new("expr");
-    mpc_parser_t* Ayolisp  = mpc_new("ayolisp");
+    mpc_parser_t* Ayocalc  = mpc_new("ayolisp");
 
     mpca_lang(MPCA_LANG_DEFAULT,
     "                                                                   \
@@ -95,17 +95,17 @@ int main(int argc, char const *argv[]) {
       expr     : <number> | '(' <operator> <expr>+ ')' ;                \
       ayolisp    : /^/ <operator> <expr>+ /$/ ;                         \
     ",
-    Number, Operator, Expr, Ayolisp);
+    Number, Operator, Expr, Ayocalc);
 
-    puts("\nAyoCalc Version 0.0.0.0.5");
-    puts("Press Ctrl+C to exit \nWhat will you lisp today? \n");
+    puts("\nAyoCalc Version 0.1");
+    puts("Press Ctrl+C to exit \nWhat will you calculate today? \n");
     while (1)
     {
-        char* input = readline("ayocalcp> ");
+        char* input = readline("ayocalc> ");
         add_history(input);
         mpc_result_t r;
 
-        if(mpc_parse("<stdin>", input, Ayolisp, &r)){
+        if(mpc_parse("<stdin>", input, Ayocalc, &r)){
             alval result = eval(r.output);
             alval_println(result);
             mpc_ast_t* a = r.output;
@@ -118,6 +118,6 @@ int main(int argc, char const *argv[]) {
         free(input);
     }
     
-    mpc_cleanup(4, Number, Operator, Expr, Ayolisp);
+    mpc_cleanup(4, Number, Operator, Expr, Ayocalc);
     return 0;
 }
