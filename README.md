@@ -12,7 +12,7 @@ A calculator repl that uses Polish notation. This implementation is from the boo
 ## How to use
 
 - Clone repo
-- run `gcc parsing.c mpc-0.9.0/mpc.c -ledit -lm -o parsing && ./parsing` in terminal
+- run `clear && gcc parsing.c mpc-0.9.0/mpc.c -ledit -lm -o parsing && ./parsing` in terminal
 - enter equation and press enter
 
 ### Dependencies
